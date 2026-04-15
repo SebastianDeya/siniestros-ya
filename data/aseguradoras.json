@@ -1,0 +1,15 @@
+[
+  {
+    "user_id": "mock-user-123",
+    "alias": "Fiat 500",
+    "compania_aseguradora": "Allianz Argentina",
+    "numero_poliza": "7424723758",
+    "tipo_seguro": "automotor",
+    "vehiculo_marca": "Fiat",
+    "vehiculo_modelo": "500",
+    "vehiculo_anio": 2014,
+    "vehiculo_patente": "MDG 681",
+    "id": "aseg-1776263361541",
+    "created_at": "2026-04-15T14:29:21.541Z"
+  }
+]

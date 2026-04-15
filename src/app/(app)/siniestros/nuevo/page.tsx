@@ -102,10 +102,6 @@ export default function NuevoSiniestroPage() {
             .upload(fileName, file);
             
           if (!uploadError) {
-             const { data: { publicUrl } } = supabase.storage
-                .from('siniestros')
-                .getPublicUrl(fileName);
-
              await supabase.from('siniestro_archivos').insert({
                 siniestro_id: siniestro.id,
                 nombre_archivo: file.name,
@@ -137,7 +133,7 @@ export default function NuevoSiniestroPage() {
       return !data.guia_leida;
     }
     if (currentStep === 4) {
-      return !data.compania_aseguradora || !data.numero_poliza || !data.tipo_seguro;
+      return !data.aseguradora_id;
     }
     return false;
   };

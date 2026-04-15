@@ -1,3 +1,17 @@
+export interface Aseguradora {
+  id: string;
+  user_id: string;
+  alias: string;
+  compania_aseguradora: string;
+  numero_poliza: string;
+  tipo_seguro: TipoSeguro;
+  vehiculo_marca: string | null;
+  vehiculo_modelo: string | null;
+  vehiculo_anio: number | null;
+  vehiculo_patente: string | null;
+  created_at: string;
+}
+
 export interface Profile {
   id: string;
   nombre: string;
@@ -112,6 +126,7 @@ export interface WizardData {
   // Paso 3
   guia_leida: boolean;
   // Paso 4
+  aseguradora_id: string;
   compania_aseguradora: string;
   numero_poliza: string;
   tipo_seguro: TipoSeguro | "";
@@ -144,6 +159,7 @@ export const INITIAL_WIZARD_DATA: WizardData = {
   descripcion: "",
   cantidad_vehiculos: 1,
   guia_leida: false,
+  aseguradora_id: "",
   compania_aseguradora: "",
   numero_poliza: "",
   tipo_seguro: "",
