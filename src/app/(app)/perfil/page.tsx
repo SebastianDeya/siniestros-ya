@@ -148,7 +148,7 @@ export default function PerfilPage() {
   }[] = [
     { key: "nombre", label: "Nombre", type: "text", placeholder: "Tu nombre" },
     { key: "apellido", label: "Apellido", type: "text", placeholder: "Tu apellido" },
-    { key: "email", label: "Email", type: "email", placeholder: "tu@email.com", readOnly: true },
+    { key: "email", label: "Email", type: "email", placeholder: "tu@email.com" },
     { key: "telefono", label: "Teléfono", type: "tel", placeholder: "Ej: 11 1234-5678" },
     { key: "dni", label: "DNI", type: "text", placeholder: "Ej: 12345678" },
   ];
