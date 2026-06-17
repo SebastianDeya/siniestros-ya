@@ -69,7 +69,7 @@ export default function PerfilPage() {
 
   function cargarPolizas(dni: string, nombre: string, apellido: string) {
     setLoadingPolizas(true);
-    fetch(`/api/polizas?dni=${encodeURIComponent(dni)}`)
+    fetch(`/api/polizas?dni=${encodeURIComponent(dni)}`, { cache: "no-store" })
       .then((r) => r.json())
       .then((data) => {
         const todas: any[] = Array.isArray(data) ? data : data ? [data] : [];

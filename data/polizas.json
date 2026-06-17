@@ -45,18 +45,48 @@
     "created_at": "2026-01-01T00:00:00.000Z"
   },
   {
+    "id": "pol-sd-001",
+    "compania": "Sancor Seguros",
     "patente": "AF216BO",
     "numero_poliza": "POL8383",
     "tipo_seguro": "automotor",
     "vehiculo_marca": "Toyota",
-    "vehiculo_modelo": "sw4",
+    "vehiculo_modelo": "SW4",
     "vehiculo_anio": 2022,
     "asegurado_nombre": "Sebastian Deya",
     "asegurado_dni": "46003134",
-    "asegurado_telefono": "",
-    "asegurado_email": "",
-    "compania": "Sancor Seguros",
-    "id": "pol-1781694971036",
-    "created_at": "2026-06-17T11:16:11.036Z"
+    "asegurado_telefono": "1138444436",
+    "asegurado_email": "sebastiandeya88@gmail.com",
+    "created_at": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "pol-sd-002",
+    "compania": "Allianz Argentina",
+    "patente": "VW450TK",
+    "numero_poliza": "ALZ-20291",
+    "tipo_seguro": "automotor",
+    "vehiculo_marca": "Volkswagen",
+    "vehiculo_modelo": "Taos",
+    "vehiculo_anio": 2023,
+    "asegurado_nombre": "Sebastian Deya",
+    "asegurado_dni": "46003134",
+    "asegurado_telefono": "1138444436",
+    "asegurado_email": "sebastiandeya88@gmail.com",
+    "created_at": "2026-01-02T00:00:00.000Z"
+  },
+  {
+    "id": "pol-sd-003",
+    "compania": "La Caja",
+    "patente": "AC510AX",
+    "numero_poliza": "LC-88102",
+    "tipo_seguro": "automotor",
+    "vehiculo_marca": "Jeep",
+    "vehiculo_modelo": "Renegade",
+    "vehiculo_anio": 2021,
+    "asegurado_nombre": "Sebastian Deya",
+    "asegurado_dni": "46003134",
+    "asegurado_telefono": "1138444436",
+    "asegurado_email": "sebastiandeya88@gmail.com",
+    "created_at": "2026-01-03T00:00:00.000Z"
   }
 ]
