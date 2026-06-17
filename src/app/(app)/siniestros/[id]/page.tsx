@@ -48,7 +48,9 @@ export default function SiniestroDetailPage() {
           .eq("siniestro_id", id),
       ]);
 
-      setSiniestro(siniestroRes.data);
+      // API returns {error:...} when not found — treat as null
+      const sinData = siniestroRes.data;
+      setSiniestro(sinData && sinData.id ? sinData : null);
       setEventos(eventosRes.data || []);
       setArchivos(archivosRes.data || []);
       setLoading(false);
