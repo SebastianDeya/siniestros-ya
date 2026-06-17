@@ -1,18 +1,9 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
 import nodemailer from "nodemailer";
-
-const DATA_FILE = path.join(process.cwd(), "data", "siniestros.json");
+import { readData, writeData } from "@/lib/storage";
 
 async function getSiniestros() {
-  try {
-    const data = await fs.readFile(DATA_FILE, "utf-8");
-    return JSON.parse(data);
-  } catch (error) {
-    console.error("Error reading db:", error);
-    return [];
-  }
+  return readData("siniestros");
 }
 
 async function sendSiniestroEmail(siniestro: any) {
@@ -132,7 +123,7 @@ export async function PATCH(request: Request) {
     }
 
     all[idx] = { ...all[idx], ...body, updated_at: new Date().toISOString() };
-    await fs.writeFile(DATA_FILE, JSON.stringify(all, null, 2), "utf-8");
+    await writeData("siniestros", all);
 
     return NextResponse.json(all[idx]);
   } catch (error) {
@@ -154,7 +145,7 @@ export async function POST(request: Request) {
     
     all.push(newRecord);
     
-    await fs.writeFile(DATA_FILE, JSON.stringify(all, null, 2), "utf-8");
+    await writeData("siniestros", all);
     
     try {
       await sendSiniestroEmail(newRecord);

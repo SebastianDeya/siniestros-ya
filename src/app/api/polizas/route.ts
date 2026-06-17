@@ -1,16 +1,8 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
-
-const DATA_FILE = path.join(process.cwd(), "data", "polizas.json");
+import { readData, writeData } from "@/lib/storage";
 
 async function getPolizas() {
-  try {
-    const data = await fs.readFile(DATA_FILE, "utf-8");
-    return JSON.parse(data);
-  } catch {
-    return [];
-  }
+  return readData("polizas");
 }
 
 export async function GET(request: Request) {
@@ -71,7 +63,7 @@ export async function POST(request: Request) {
     };
 
     all.push(newRecord);
-    await fs.writeFile(DATA_FILE, JSON.stringify(all, null, 2), "utf-8");
+    await writeData("polizas", all);
     return NextResponse.json(newRecord, { status: 201 });
   } catch {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
@@ -86,7 +78,7 @@ export async function DELETE(request: Request) {
 
     const all = await getPolizas();
     const filtered = all.filter((p: any) => p.id !== id);
-    await fs.writeFile(DATA_FILE, JSON.stringify(filtered, null, 2), "utf-8");
+    await writeData("polizas", filtered);
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
