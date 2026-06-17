@@ -11,6 +11,7 @@ import {
   LogOut,
   Menu,
   X,
+  HelpCircle,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -30,6 +31,7 @@ const NAV_ITEMS = [
   { href: "/siniestros", label: "Siniestros", icon: FileText },
   { href: "/siniestros/nuevo", label: "Nuevo", icon: PlusCircle },
   { href: "/perfil", label: "Perfil", icon: User },
+  { href: "/faq", label: "FAQ", icon: HelpCircle },
 ];
 
 export function AppShell({ user, children }: AppShellProps) {

@@ -1,0 +1,62 @@
+[
+  {
+    "id": "pol-001",
+    "compania": "Allianz Argentina",
+    "patente": "MDG681",
+    "numero_poliza": "7424723758",
+    "tipo_seguro": "automotor",
+    "vehiculo_marca": "Fiat",
+    "vehiculo_modelo": "500",
+    "vehiculo_anio": 2014,
+    "asegurado_nombre": "Juan Lopez",
+    "asegurado_dni": "53523523",
+    "asegurado_telefono": "11-2222-2222",
+    "asegurado_email": "juanlopez@gmail.com",
+    "created_at": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "pol-002",
+    "compania": "Sancor Seguros",
+    "patente": "ABC123",
+    "numero_poliza": "SAN-99012",
+    "tipo_seguro": "automotor",
+    "vehiculo_marca": "Toyota",
+    "vehiculo_modelo": "Corolla",
+    "vehiculo_anio": 2020,
+    "asegurado_nombre": "Maria Garcia",
+    "asegurado_dni": "28345678",
+    "asegurado_telefono": "11-5678-9012",
+    "asegurado_email": "maria.garcia@gmail.com",
+    "created_at": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "pol-003",
+    "compania": "La Caja",
+    "patente": "XYZ789",
+    "numero_poliza": "LC-55301",
+    "tipo_seguro": "automotor",
+    "vehiculo_marca": "Volkswagen",
+    "vehiculo_modelo": "Gol",
+    "vehiculo_anio": 2018,
+    "asegurado_nombre": "Carlos Perez",
+    "asegurado_dni": "33456789",
+    "asegurado_telefono": "11-4444-5555",
+    "asegurado_email": "carlos.perez@gmail.com",
+    "created_at": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "patente": "AF216BO",
+    "numero_poliza": "POL8383",
+    "tipo_seguro": "automotor",
+    "vehiculo_marca": "Toyota",
+    "vehiculo_modelo": "sw4",
+    "vehiculo_anio": 2022,
+    "asegurado_nombre": "Sebastian Deya",
+    "asegurado_dni": "46003134",
+    "asegurado_telefono": "",
+    "asegurado_email": "",
+    "compania": "Sancor Seguros",
+    "id": "pol-1781694971036",
+    "created_at": "2026-06-17T11:16:11.036Z"
+  }
+]

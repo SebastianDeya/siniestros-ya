@@ -2,13 +2,25 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 import { LogIn, Eye, EyeOff } from "lucide-react";
+
+type Cuenta =
+  | { tipo: "usuario"; nombre: string; apellido: string }
+  | { tipo: "aseguradora"; compania: string };
+
+const CUENTAS: Record<string, { password: string; cuenta: Cuenta }> = {
+  usuario1:      { password: "demo2026", cuenta: { tipo: "usuario", nombre: "Juan",      apellido: "Pérez"   } },
+  usuario2:      { password: "demo2026", cuenta: { tipo: "usuario", nombre: "María",     apellido: "García"  } },
+  sebastiandeya: { password: "demo2026", cuenta: { tipo: "usuario", nombre: "Sebastian", apellido: "Deya"   } },
+  sancor:        { password: "demo2026", cuenta: { tipo: "aseguradora", compania: "Sancor Seguros"      } },
+  lacaja:        { password: "demo2026", cuenta: { tipo: "aseguradora", compania: "La Caja"             } },
+  allianz:       { password: "demo2026", cuenta: { tipo: "aseguradora", compania: "Allianz Argentina"   } },
+  cajaseguros:   { password: "demo2026", cuenta: { tipo: "aseguradora", compania: "Caja de Seguros"     } },
+};
 
 export default function IniciarSesionPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -19,24 +31,28 @@ export default function IniciarSesionPage() {
     setError("");
     setLoading(true);
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const entrada = CUENTAS[usuario.trim().toLowerCase()];
 
-    if (error) {
-      setError(
-        error.message === "Invalid login credentials"
-          ? "Email o contraseña incorrectos"
-          : error.message
-      );
+    if (!entrada || entrada.password !== password) {
+      setError("Usuario o contraseña incorrectos.");
       setLoading(false);
       return;
     }
 
-    router.push("/dashboard");
-    router.refresh();
+    if (entrada.cuenta.tipo === "aseguradora") {
+      localStorage.setItem(
+        "aseguradora_session",
+        JSON.stringify({ compania: entrada.cuenta.compania })
+      );
+      router.push("/aseguradora");
+    } else {
+      const { nombre, apellido } = entrada.cuenta;
+      const username = usuario.trim().toLowerCase();
+      const session = { id: `user-${username}`, nombre, apellido, email: `${username}@demo.com` };
+      localStorage.setItem("user_session", JSON.stringify(session));
+      document.cookie = `user_session=${encodeURIComponent(JSON.stringify(session))}; path=/; SameSite=Lax`;
+      router.push("/dashboard");
+    }
   }
 
   return (
@@ -47,28 +63,23 @@ export default function IniciarSesionPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Email
+          <label htmlFor="usuario" className="block text-sm font-medium text-gray-700 mb-1">
+            Usuario
           </label>
           <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            id="usuario"
+            type="text"
+            value={usuario}
+            onChange={(e) => { setUsuario(e.target.value); setError(""); }}
             required
+            autoComplete="username"
             className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition text-gray-900"
-            placeholder="tu@email.com"
+            placeholder="ej: usuario1"
           />
         </div>
 
         <div>
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
             Contraseña
           </label>
           <div className="relative">
@@ -76,9 +87,8 @@ export default function IniciarSesionPage() {
               id="password"
               type={showPassword ? "text" : "password"}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => { setPassword(e.target.value); setError(""); }}
               required
-              minLength={6}
               className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition text-gray-900 pr-12"
               placeholder="••••••••"
             />
@@ -114,15 +124,6 @@ export default function IniciarSesionPage() {
         </button>
       </form>
 
-      <p className="text-center text-sm text-gray-500 mt-6">
-        ¿No tenés cuenta?{" "}
-        <Link
-          href="/registrarse"
-          className="text-accent hover:text-primary font-medium"
-        >
-          Registrate
-        </Link>
-      </p>
     </div>
   );
 }

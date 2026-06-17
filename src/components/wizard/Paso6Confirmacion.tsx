@@ -105,16 +105,6 @@ export default function Paso6Confirmacion({ data, onGoToStep }: Paso6Confirmacio
         />
         <DataRow label="Ubicación" value={data.ubicacion} />
         <DataRow
-          label="Heridos"
-          value={
-            data.hay_heridos === true
-              ? "Sí"
-              : data.hay_heridos === false
-              ? "No"
-              : "No especificado"
-          }
-        />
-        <DataRow
           label="Fecha"
           value={data.fecha_siniestro ? formatFecha(data.fecha_siniestro) : ""}
         />

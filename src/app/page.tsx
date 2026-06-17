@@ -1,18 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Shield, Clock, FileCheck, ArrowRight } from "lucide-react";
+import FaqSection from "@/components/FaqSection";
 
-export default async function HomePage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (user) {
-    redirect("/dashboard");
-  }
-
+export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero */}
@@ -95,6 +85,8 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      <FaqSection />
 
       {/* Footer */}
       <footer className="border-t border-gray-200 py-8 text-center text-sm text-gray-500">

@@ -58,7 +58,7 @@ export default function NuevoSiniestroPage() {
           user_id: user.id,
           numero_seguimiento,
           en_lugar_hecho: data.en_lugar_hecho,
-          hay_heridos: data.hay_heridos,
+          hay_heridos: false,
           ubicacion: data.ubicacion,
           ubicacion_lat: data.ubicacion_lat,
           ubicacion_lng: data.ubicacion_lng,
@@ -124,7 +124,7 @@ export default function NuevoSiniestroPage() {
 
   const isNextDisabled = () => {
     if (currentStep === 1) {
-      return data.en_lugar_hecho === null || data.hay_heridos === null || !data.ubicacion || !data.fecha_siniestro;
+      return data.en_lugar_hecho === null || !data.ubicacion || !data.fecha_siniestro;
     }
     if (currentStep === 2) {
       return !data.tipo_siniestro || !data.descripcion;
@@ -133,7 +133,7 @@ export default function NuevoSiniestroPage() {
       return !data.guia_leida;
     }
     if (currentStep === 4) {
-      return !data.aseguradora_id;
+      return !data.compania_aseguradora;
     }
     return false;
   };

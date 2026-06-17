@@ -217,36 +217,38 @@ export default function SiniestroDetailPage() {
             </div>
           )}
 
-          {siniestro.hay_heridos && (
-            <div className="flex items-start gap-3">
-              <AlertTriangle
-                size={18}
-                className="text-danger mt-0.5 flex-shrink-0"
-              />
-              <div>
-                <p className="text-xs text-danger uppercase tracking-wide font-medium">
-                  Hay heridos
-                </p>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
       {/* Timeline */}
       <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-4">
-        <h2 className="text-base font-semibold text-gray-900 mb-5 flex items-center gap-2">
-          <Clock size={18} className="text-primary" />
-          Seguimiento
-        </h2>
+        <div className="flex items-start justify-between gap-3 mb-5">
+          <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+            <Clock size={18} className="text-primary" />
+            Seguimiento
+          </h2>
+          {(() => {
+            const dias = Math.floor(
+              (Date.now() - new Date(siniestro.created_at).getTime()) /
+                (1000 * 60 * 60 * 24)
+            );
+            return (
+              <span className="text-xs text-gray-400 bg-gray-50 border border-gray-200 px-3 py-1 rounded-full whitespace-nowrap">
+                {dias === 0
+                  ? "Ingresado hoy"
+                  : dias === 1
+                  ? "Hace 1 día"
+                  : `Hace ${dias} días`}
+              </span>
+            );
+          })()}
+        </div>
 
         <div className="relative">
           {ETAPAS_SINIESTRO.map((etapa, index) => {
             const isCompleted = index < currentEtapaIndex;
             const isCurrent = index === currentEtapaIndex;
             const isPending = index > currentEtapaIndex;
-
-            // Find matching event for this stage
             const evento = eventos.find((ev) => ev.etapa === etapa.value);
 
             return (
@@ -279,33 +281,29 @@ export default function SiniestroDetailPage() {
                 </div>
 
                 {/* Content */}
-                <div className="pt-1 min-w-0">
+                <div className="pt-1 min-w-0 flex-1">
                   <p
                     className={cn(
                       "text-sm font-medium",
-                      isCompleted
-                        ? "text-gray-900"
-                        : isCurrent
-                        ? "text-accent"
-                        : "text-gray-400"
+                      isCompleted ? "text-gray-900" : isCurrent ? "text-accent" : "text-gray-400"
                     )}
                   >
                     {etapa.label}
                   </p>
-                  <p
-                    className={cn(
-                      "text-xs mt-0.5",
-                      isPending ? "text-gray-300" : "text-gray-500"
-                    )}
-                  >
+                  <p className={cn("text-xs mt-0.5", isPending ? "text-gray-300" : "text-gray-500")}>
                     {etapa.descripcion}
                   </p>
+                  {isCurrent && "empatia" in etapa && (
+                    <p className="text-xs text-accent/70 mt-1.5 italic">
+                      {(etapa as any).empatia}
+                    </p>
+                  )}
                   {evento && (
                     <p className="text-xs text-gray-400 mt-1">
                       {formatFecha(evento.fecha)}
                       {evento.descripcion &&
                         evento.descripcion !== etapa.descripcion &&
-                        ` - ${evento.descripcion}`}
+                        ` — ${evento.descripcion}`}
                     </p>
                   )}
                 </div>

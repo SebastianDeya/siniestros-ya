@@ -3,8 +3,6 @@
 import { useState, useCallback } from "react";
 import {
   MapPin,
-  AlertTriangle,
-  Phone,
   Navigation,
   Loader2,
   Calendar,
@@ -150,59 +148,6 @@ export default function Paso1Situacion({ data, onUpdate }: Paso1SituacionProps) 
               Reintentar obtener ubicación
             </button>
           )}
-        </div>
-      )}
-
-      {/* Heridos */}
-      <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-700">
-          ¿Hay personas heridas?
-        </label>
-        <div className="flex gap-3">
-          {[
-            { value: true, label: "Sí" },
-            { value: false, label: "No" },
-          ].map((option) => (
-            <button
-              key={String(option.value)}
-              type="button"
-              onClick={() => onUpdate({ hay_heridos: option.value })}
-              className={cn(
-                "flex-1 py-3 px-4 rounded-xl text-sm font-semibold border-2 transition-all duration-200",
-                data.hay_heridos === option.value
-                  ? option.value
-                    ? "border-danger bg-danger/5 text-danger"
-                    : "border-success bg-success/5 text-success"
-                  : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
-              )}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Alert heridos */}
-      {data.hay_heridos === true && (
-        <div className="bg-danger/5 border-2 border-danger rounded-2xl p-5 space-y-3">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="w-6 h-6 text-danger shrink-0 mt-0.5" />
-            <div>
-              <p className="font-bold text-danger text-base">Atención: hay personas heridas</p>
-              <p className="text-sm text-gray-700 mt-1">
-                Si hay heridos, llam&aacute; inmediatamente al <strong>107 (SAME)</strong> o al{" "}
-                <strong>911</strong>. No muevas a las personas heridas salvo que est&eacute;n en
-                peligro inmediato.
-              </p>
-            </div>
-          </div>
-          <a
-            href="tel:107"
-            className="flex items-center justify-center gap-2 w-full bg-danger text-white py-3 px-4 rounded-xl font-bold text-base hover:bg-danger/90 transition-colors"
-          >
-            <Phone className="w-5 h-5" />
-            Llamar al 107 (SAME)
-          </a>
         </div>
       )}
 

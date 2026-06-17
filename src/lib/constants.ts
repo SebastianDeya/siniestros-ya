@@ -52,32 +52,38 @@ export const ETAPAS_SINIESTRO = [
   {
     value: "denuncia_recibida",
     label: "Denuncia recibida",
-    descripcion: "Tu denuncia fue registrada correctamente",
+    descripcion: "Recibimos tu denuncia. Ya está en manos de la aseguradora.",
+    empatia: "Sabemos que fue un momento difícil. Lo primero está hecho.",
   },
   {
     value: "en_revision",
-    label: "En revisión por la aseguradora",
-    descripcion: "La aseguradora está evaluando tu caso",
+    label: "En revisión",
+    descripcion: "La aseguradora está analizando los detalles de tu caso.",
+    empatia: "Gracias por tu paciencia. Esto suele tomar algunos días hábiles.",
   },
   {
     value: "perito_asignado",
     label: "Perito asignado",
-    descripcion: "Se asignó un perito para evaluar los daños",
+    descripcion: "Un perito fue designado para evaluar los daños.",
+    empatia: "Pronto te contactarán para coordinar la inspección del vehículo.",
   },
   {
     value: "peritaje_realizado",
-    label: "Peritaje realizado",
-    descripcion: "El perito completó la evaluación",
+    label: "Peritaje completado",
+    descripcion: "El perito evaluó los daños. Ya casi llegamos.",
+    empatia: "La información ya está en manos de la aseguradora para resolver.",
   },
   {
     value: "resolucion_emitida",
     label: "Resolución emitida",
-    descripcion: "La aseguradora emitió una resolución",
+    descripcion: "La aseguradora emitió una resolución para tu caso.",
+    empatia: "Revisá los detalles de la resolución y contactanos si tenés dudas.",
   },
   {
     value: "caso_cerrado",
     label: "Caso cerrado",
-    descripcion: "El siniestro fue cerrado",
+    descripcion: "Tu siniestro fue resuelto y cerrado.",
+    empatia: "Esperamos que todo haya salido bien. Gracias por confiar en nosotros.",
   },
 ] as const;
 
@@ -117,6 +123,7 @@ export const ESTADO_CONFIG: Record<
   },
 };
 
+// Guías para cuando el usuario ESTÁ en el lugar del siniestro
 export const GUIA_QUE_HACER = [
   "Sacar fotos de todos los vehículos involucrados (daños, patentes, panorámica)",
   "Anotar los datos del otro conductor: nombre, DNI, aseguradora, número de póliza, patente",
@@ -131,4 +138,20 @@ export const GUIA_QUE_NO_HACER = [
   "NO admitas culpabilidad en el lugar",
   "NO te vayas del lugar sin tomar los datos del otro involucrado",
   "NO acordes pagos en efectivo sin intervención de la aseguradora",
+];
+
+// Guías para cuando el usuario NO está en el lugar del siniestro
+export const GUIA_QUE_HACER_REMOTO = [
+  "Reuní toda la documentación disponible: fotos, videos, partes policiales o testigos",
+  "Contactá a tu aseguradora para dar aviso del siniestro lo antes posible",
+  "Anotá la fecha y hora exacta en que ocurrió o te enteraste del hecho",
+  "Guardá cualquier comunicación vinculada al siniestro (mensajes, emails, llamadas)",
+  "Revisá tu póliza para conocer los plazos de denuncia que te aplican",
+];
+
+export const GUIA_QUE_NO_HACER_REMOTO = [
+  "NO esperes demasiado para denunciar — tenés plazos legales que vencen",
+  "NO firmes ningún documento sin leerlo completamente",
+  "NO realices reparaciones antes de que el perito evalúe los daños",
+  "NO acordes pagos ni arreglos directos sin intervención de la aseguradora",
 ];

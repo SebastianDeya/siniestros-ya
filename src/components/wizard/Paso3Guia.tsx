@@ -1,8 +1,13 @@
 "use client";
 
-import { CheckCircle2, XCircle, BookOpen } from "lucide-react";
+import { CheckCircle2, XCircle, BookOpen, MapPin, MapPinOff } from "lucide-react";
 import type { WizardData } from "@/lib/types";
-import { GUIA_QUE_HACER, GUIA_QUE_NO_HACER } from "@/lib/constants";
+import {
+  GUIA_QUE_HACER,
+  GUIA_QUE_NO_HACER,
+  GUIA_QUE_HACER_REMOTO,
+  GUIA_QUE_NO_HACER_REMOTO,
+} from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 interface Paso3GuiaProps {
@@ -11,6 +16,10 @@ interface Paso3GuiaProps {
 }
 
 export default function Paso3Guia({ data, onUpdate }: Paso3GuiaProps) {
+  const enLugar = data.en_lugar_hecho === true;
+  const queHacer = enLugar ? GUIA_QUE_HACER : GUIA_QUE_HACER_REMOTO;
+  const queNoHacer = enLugar ? GUIA_QUE_NO_HACER : GUIA_QUE_NO_HACER_REMOTO;
+
   return (
     <div className="space-y-6">
       <div>
@@ -18,6 +27,13 @@ export default function Paso3Guia({ data, onUpdate }: Paso3GuiaProps) {
         <p className="text-gray-500 text-sm">
           Seguí estas recomendaciones para proteger tus derechos
         </p>
+        <div className={cn(
+          "inline-flex items-center gap-1.5 mt-2 text-xs font-medium px-3 py-1 rounded-full",
+          enLugar ? "bg-warning/10 text-warning" : "bg-gray-100 text-gray-500"
+        )}>
+          {enLugar ? <MapPin size={12} /> : <MapPinOff size={12} />}
+          {enLugar ? "Estás en el lugar del siniestro" : "No estás en el lugar del siniestro"}
+        </div>
       </div>
 
       {/* Qué hacer */}
@@ -27,7 +43,7 @@ export default function Paso3Guia({ data, onUpdate }: Paso3GuiaProps) {
           <h3 className="font-bold text-success text-base">Qué hacer</h3>
         </div>
         <ul className="space-y-3">
-          {GUIA_QUE_HACER.map((item, i) => (
+          {queHacer.map((item, i) => (
             <li key={i} className="flex items-start gap-3">
               <span className="w-6 h-6 rounded-full bg-success/10 text-success flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
                 {i + 1}
@@ -45,7 +61,7 @@ export default function Paso3Guia({ data, onUpdate }: Paso3GuiaProps) {
           <h3 className="font-bold text-danger text-base">Qué NO hacer</h3>
         </div>
         <ul className="space-y-3">
-          {GUIA_QUE_NO_HACER.map((item, i) => (
+          {queNoHacer.map((item, i) => (
             <li key={i} className="flex items-start gap-3">
               <XCircle className="w-5 h-5 text-danger/60 shrink-0 mt-0.5" />
               <span className="text-sm text-gray-700">{item}</span>

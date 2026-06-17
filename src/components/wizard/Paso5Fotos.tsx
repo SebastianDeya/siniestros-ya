@@ -58,26 +58,42 @@ export default function Paso5Fotos({ data, onUpdate }: Paso5FotosProps) {
     handleFiles(e.dataTransfer.files);
   };
 
+  const enLugar = data.en_lugar_hecho === true;
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-gray-900 mb-1">Fotos y evidencia</h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-1">
+          {enLugar ? "Sacá las fotos ahora, antes de irte" : "Fotos y evidencia"}
+        </h2>
         <p className="text-gray-500 text-sm">
-          Subí fotos del siniestro e ingresá los datos del tercero
+          {enLugar
+            ? "Mientras estás en el lugar, es el mejor momento para capturar todo. Después puede ser tarde."
+            : "Subí las fotos que tengas del siniestro e ingresá los datos del tercero si los tenés."}
         </p>
       </div>
 
       {/* Sugerencias */}
-      <div className="bg-accent/5 border-2 border-accent/20 rounded-2xl p-4 space-y-3">
-        <p className="text-sm font-semibold text-accent">Fotos recomendadas:</p>
+      <div className={cn(
+        "border-2 rounded-2xl p-4 space-y-3",
+        enLugar ? "bg-warning/5 border-warning/30" : "bg-accent/5 border-accent/20"
+      )}>
+        <p className={cn("text-sm font-semibold", enLugar ? "text-warning" : "text-accent")}>
+          {enLugar ? "Hacelo ahora — fotos clave:" : "Fotos recomendadas:"}
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {SUGERENCIAS_FOTOS.map((sug, i) => (
             <div key={i} className="flex items-center gap-2 text-sm text-gray-600">
-              <span className="text-accent/60">{sug.icon}</span>
+              <span className={cn(enLugar ? "text-warning/60" : "text-accent/60")}>{sug.icon}</span>
               {sug.text}
             </div>
           ))}
         </div>
+        {enLugar && (
+          <p className="text-xs text-warning/80 border-t border-warning/20 pt-3 mt-1">
+            No muevas los vehículos hasta sacar todas las fotos.
+          </p>
+        )}
       </div>
 
       {/* Upload zone */}
