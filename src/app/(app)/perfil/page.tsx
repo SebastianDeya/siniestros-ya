@@ -45,13 +45,21 @@ export default function PerfilPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+      // Read directly from localStorage — no mock thenable involved
+      const raw = localStorage.getItem(`profile_${user.id}`);
+      const saved = raw ? JSON.parse(raw) : null;
 
-      const nombre = data?.nombre || user.user_metadata?.nombre || "";
-      const apellido = data?.apellido || user.user_metadata?.apellido || "";
-      const dni = data?.dni || "";
+      const nombre = saved?.nombre || user.user_metadata?.nombre || "";
+      const apellido = saved?.apellido || user.user_metadata?.apellido || "";
+      const dni = saved?.dni || "";
 
-      setProfile({ nombre, apellido, email: data?.email || user.email || "", telefono: data?.telefono || "", dni });
+      setProfile({
+        nombre,
+        apellido,
+        email: saved?.email || user.email || "",
+        telefono: saved?.telefono || "",
+        dni,
+      });
 
       if (dni) cargarPolizas(dni, nombre, apellido);
       setLoading(false);
@@ -82,35 +90,40 @@ export default function PerfilPage() {
     setSaved(false);
 
     const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setSaving(false); return; }
 
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({
-        nombre: profile.nombre,
-        apellido: profile.apellido,
-        telefono: profile.telefono || null,
-        dni: profile.dni || null,
-        email: profile.email || null,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", user.id);
+    // Persist directly to localStorage — no mock thenable dependency
+    const profileData = {
+      id: user.id,
+      nombre: profile.nombre,
+      apellido: profile.apellido,
+      telefono: profile.telefono || null,
+      dni: profile.dni || null,
+      email: profile.email || null,
+      updated_at: new Date().toISOString(),
+    };
+    localStorage.setItem(`profile_${user.id}`, JSON.stringify(profileData));
+
+    // Keep user_session in sync so the sidebar shows the updated name
+    try {
+      const sessionRaw = localStorage.getItem("user_session");
+      if (sessionRaw) {
+        const session = JSON.parse(sessionRaw);
+        session.nombre = profile.nombre;
+        session.apellido = profile.apellido;
+        localStorage.setItem("user_session", JSON.stringify(session));
+        document.cookie = `user_session=${encodeURIComponent(JSON.stringify(session))}; path=/; SameSite=Lax`;
+      }
+    } catch {}
 
     setSaving(false);
-
-    if (updateError) {
-      setError("No se pudo guardar. Intenta de nuevo.");
-    } else {
-      if (profile.dni) {
-        localStorage.setItem("user_dni", profile.dni.trim());
-        cargarPolizas(profile.dni.trim(), profile.nombre, profile.apellido);
-      }
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
+    if (profile.dni) {
+      localStorage.setItem("user_dni", profile.dni.trim());
+      cargarPolizas(profile.dni.trim(), profile.nombre, profile.apellido);
     }
+    setSaved(true);
+    setTimeout(() => setSaved(false), 3000);
   }
 
   function handleChange(field: keyof ProfileData, value: string) {
