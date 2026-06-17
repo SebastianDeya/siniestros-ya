@@ -1,50 +1,56 @@
 import { NextResponse } from "next/server";
-import { readData, writeData } from "@/lib/storage";
-
-async function getPolizas() {
-  return readData("polizas");
-}
+import { db } from "@/lib/supabase/db";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const patente = searchParams.get("patente");
+  const dni = searchParams.get("dni");
   const compania = searchParams.get("compania");
-
-  const all = await getPolizas();
 
   if (patente) {
     const normalizada = patente.replace(/\s/g, "").toUpperCase();
-    const found = all.find(
+    const { data } = await db
+      .from("polizas")
+      .select("*")
+      .ilike("patente", normalizada);
+    const found = (data || []).find(
       (p: any) => p.patente.replace(/\s/g, "").toUpperCase() === normalizada
     );
-    if (!found) return NextResponse.json(null);
-    return NextResponse.json(found);
+    return NextResponse.json(found || null);
   }
 
-  const dni = searchParams.get("dni");
   if (dni) {
-    const found = all.filter((p: any) => p.asegurado_dni === dni.trim());
-    if (found.length === 0) return NextResponse.json(null);
-    return NextResponse.json(found);
+    const { data } = await db
+      .from("polizas")
+      .select("*")
+      .eq("asegurado_dni", dni.trim());
+    const found = data || [];
+    return NextResponse.json(found.length === 0 ? null : found);
   }
 
   if (compania) {
-    return NextResponse.json(all.filter((p: any) => p.compania === compania));
+    const { data } = await db
+      .from("polizas")
+      .select("*")
+      .eq("compania", compania);
+    return NextResponse.json(data || []);
   }
 
-  return NextResponse.json(all);
+  const { data } = await db.from("polizas").select("*").order("created_at", { ascending: false });
+  return NextResponse.json(data || []);
 }
 
 export async function POST(request: Request) {
   try {
     const payload = await request.json();
-    const all = await getPolizas();
 
-    // Validate: same DNI must have same nombre (DNI+nombre is the person identifier)
-    const mismosDni = all.filter(
-      (p: any) => p.asegurado_dni === payload.asegurado_dni
-    );
-    if (mismosDni.length > 0) {
+    // Validate: same DNI must have same nombre
+    const { data: mismosDni } = await db
+      .from("polizas")
+      .select("asegurado_nombre")
+      .eq("asegurado_dni", payload.asegurado_dni);
+
+    if (mismosDni && mismosDni.length > 0) {
       const nombreExistente = mismosDni[0].asegurado_nombre?.trim().toLowerCase();
       const nombreNuevo = payload.asegurado_nombre?.trim().toLowerCase();
       if (nombreExistente !== nombreNuevo) {
@@ -62,9 +68,12 @@ export async function POST(request: Request) {
       created_at: new Date().toISOString(),
     };
 
-    all.push(newRecord);
-    await writeData("polizas", all);
-    return NextResponse.json(newRecord, { status: 201 });
+    const { data, error } = await db.from("polizas").insert(newRecord).select().single();
+    if (error) {
+      console.error("Error inserting poliza:", error);
+      return NextResponse.json({ error: "Internal Error" }, { status: 500 });
+    }
+    return NextResponse.json(data, { status: 201 });
   } catch {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
@@ -76,9 +85,8 @@ export async function DELETE(request: Request) {
     const id = searchParams.get("id");
     if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
-    const all = await getPolizas();
-    const filtered = all.filter((p: any) => p.id !== id);
-    await writeData("polizas", filtered);
+    const { error } = await db.from("polizas").delete().eq("id", id);
+    if (error) return NextResponse.json({ error: "Internal Error" }, { status: 500 });
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });

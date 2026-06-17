@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
-import { readData, writeData } from "@/lib/storage";
-
-async function getSiniestros() {
-  return readData("siniestros");
-}
+import { db } from "@/lib/supabase/db";
 
 async function sendSiniestroEmail(siniestro: any) {
   const host = process.env.SMTP_HOST;
@@ -20,7 +16,7 @@ async function sendSiniestroEmail(siniestro: any) {
     <div style="font-family: sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
       <h2 style="color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 8px;">Nueva Denuncia de Siniestro Recibida</h2>
       <p style="font-size: 16px;"><strong>Nro. de Seguimiento:</strong> <span style="font-family: monospace; font-weight: bold; font-size: 18px; color: #1d4ed8;">${siniestro.numero_seguimiento}</span></p>
-      
+
       <h3 style="color: #1e3a8a; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; margin-top: 24px;">Datos del Asegurado y Póliza</h3>
       <table style="width: 100%; border-collapse: collapse;">
         <tr><td style="padding: 4px 0; font-weight: bold; width: 40%;">Nombre del Asegurado:</td><td style="padding: 4px 0;">${siniestro.asegurado_nombre || "No especificado"}</td></tr>
@@ -33,7 +29,7 @@ async function sendSiniestroEmail(siniestro: any) {
         <tr><td style="padding: 4px 0; font-weight: bold;">Vehículo:</td><td style="padding: 4px 0;">${[siniestro.vehiculo_marca, siniestro.vehiculo_modelo, siniestro.vehiculo_anio].filter(Boolean).join(" ") || "No especificado"}</td></tr>
         <tr><td style="padding: 4px 0; font-weight: bold;">Patente:</td><td style="padding: 4px 0; font-family: monospace;">${siniestro.vehiculo_patente || "No especificada"}</td></tr>
       </table>
-      
+
       <h3 style="color: #1e3a8a; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; margin-top: 24px;">Detalles del Hecho</h3>
       <table style="width: 100%; border-collapse: collapse;">
         <tr><td style="padding: 4px 0; font-weight: bold; width: 40%;">Fecha y Hora:</td><td style="padding: 4px 0;">${siniestro.fecha_siniestro || "No especificada"} a las ${siniestro.hora_siniestro || "No especificada"} hs</td></tr>
@@ -42,7 +38,7 @@ async function sendSiniestroEmail(siniestro: any) {
         <tr><td style="padding: 4px 0; font-weight: bold;">Cantidad de Vehículos:</td><td style="padding: 4px 0;">${siniestro.cantidad_vehiculos || "1"}</td></tr>
         <tr><td style="padding: 4px 0; font-weight: bold; vertical-align: top;">Descripción:</td><td style="padding: 4px 0; white-space: pre-wrap;">${siniestro.descripcion || "Sin descripción"}</td></tr>
       </table>
-      
+
       <h3 style="color: #1e3a8a; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; margin-top: 24px;">Datos del Tercero Involucrado</h3>
       <table style="width: 100%; border-collapse: collapse;">
         <tr><td style="padding: 4px 0; font-weight: bold; width: 40%;">Nombre del Tercero:</td><td style="padding: 4px 0;">${siniestro.tercero_nombre || "No especificado"}</td></tr>
@@ -50,7 +46,7 @@ async function sendSiniestroEmail(siniestro: any) {
         <tr><td style="padding: 4px 0; font-weight: bold;">Patente del Tercero:</td><td style="padding: 4px 0; font-family: monospace;">${siniestro.tercero_patente || "No especificado"}</td></tr>
         <tr><td style="padding: 4px 0; font-weight: bold;">Aseguradora del Tercero:</td><td style="padding: 4px 0;">${siniestro.tercero_aseguradora || "No especificado"}</td></tr>
       </table>
-      
+
       <div style="margin-top: 30px; font-size: 12px; color: #666; text-align: center; border-top: 1px solid #eee; padding-top: 10px;">
         Este es un correo automático generado por Siniestros Ya.
       </div>
@@ -58,14 +54,7 @@ async function sendSiniestroEmail(siniestro: any) {
   `;
 
   if (!host || !user || !pass) {
-    console.log("=========================================");
-    console.log("FALLBACK: SMTP no configurado. Detalle del email:");
-    console.log(`De: ${from}`);
-    console.log(`Para: ${to}`);
-    console.log(`Asunto: ${emailSubject}`);
-    console.log("Contenido HTML:");
-    console.log(emailHtml);
-    console.log("=========================================");
+    console.log("SMTP no configurado. Siniestro guardado:", siniestro.numero_seguimiento);
     return;
   }
 
@@ -76,56 +65,59 @@ async function sendSiniestroEmail(siniestro: any) {
       secure,
       auth: { user, pass },
     });
-
-    await transporter.sendMail({
-      from,
-      to,
-      subject: emailSubject,
-      html: emailHtml,
-    });
-    console.log(`Email enviado con éxito a ${to} para el siniestro ${siniestro.numero_seguimiento}`);
+    await transporter.sendMail({ from, to, subject: emailSubject, html: emailHtml });
   } catch (error) {
-    console.error("Error al enviar el correo electrónico via SMTP:", error);
+    console.error("Error al enviar email:", error);
   }
 }
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
-  
-  const all = await getSiniestros();
-  
+
   if (id) {
-    const single = all.find((s: any) => s.id === id);
-    if (!single) {
+    const { data, error } = await db
+      .from("siniestros")
+      .select("*")
+      .eq("id", id)
+      .single();
+    if (error || !data) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
-    return NextResponse.json(single);
+    return NextResponse.json(data);
   }
-  
-  return NextResponse.json(all);
+
+  const { data, error } = await db
+    .from("siniestros")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching siniestros:", error);
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
+  }
+
+  return NextResponse.json(data || []);
 }
 
 export async function PATCH(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
-    if (!id) {
-      return NextResponse.json({ error: "Missing id" }, { status: 400 });
-    }
+    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
     const body = await request.json();
-    const all = await getSiniestros();
+    const { data, error } = await db
+      .from("siniestros")
+      .update({ ...body, updated_at: new Date().toISOString() })
+      .eq("id", id)
+      .select()
+      .single();
 
-    const idx = all.findIndex((s: any) => s.id === id);
-    if (idx === -1) {
+    if (error || !data) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
-
-    all[idx] = { ...all[idx], ...body, updated_at: new Date().toISOString() };
-    await writeData("siniestros", all);
-
-    return NextResponse.json(all[idx]);
+    return NextResponse.json(data);
   } catch (error) {
     console.error("Error updating siniestro:", error);
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
@@ -135,25 +127,31 @@ export async function PATCH(request: Request) {
 export async function POST(request: Request) {
   try {
     const payload = await request.json();
-    const all = await getSiniestros();
-    
+
     const newRecord = {
       ...payload,
-      id: payload.id || `mock-id-${Date.now()}`,
-      created_at: payload.created_at || new Date().toISOString()
+      id: payload.id || `sin-${Date.now()}`,
+      created_at: payload.created_at || new Date().toISOString(),
     };
-    
-    all.push(newRecord);
-    
-    await writeData("siniestros", all);
-    
+
+    const { data, error } = await db
+      .from("siniestros")
+      .insert(newRecord)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error inserting siniestro:", error);
+      return NextResponse.json({ error: "Internal Error" }, { status: 500 });
+    }
+
     try {
-      await sendSiniestroEmail(newRecord);
+      await sendSiniestroEmail(data || newRecord);
     } catch (mailError) {
       console.error("Fallo silencioso al enviar el mail:", mailError);
     }
-    
-    return NextResponse.json(newRecord, { status: 201 });
+
+    return NextResponse.json(data || newRecord, { status: 201 });
   } catch (error) {
     console.error("Error writing db:", error);
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
