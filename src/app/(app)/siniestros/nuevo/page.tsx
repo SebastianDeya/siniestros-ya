@@ -122,21 +122,28 @@ export default function NuevoSiniestroPage() {
     }
   };
 
-  const isNextDisabled = () => {
+  const getValidationMessage = (): string | null => {
     if (currentStep === 1) {
-      return data.en_lugar_hecho === null || !data.ubicacion || !data.fecha_siniestro;
+      if (data.en_lugar_hecho === null) return "Indicá si estás en el lugar del hecho";
+      if (!data.ubicacion) return "Ingresá la ubicación del siniestro";
+      if (!data.fecha_siniestro) return "Ingresá la fecha del siniestro";
     }
     if (currentStep === 2) {
-      return !data.tipo_siniestro || !data.descripcion;
+      if (!data.tipo_siniestro) return "Seleccioná el tipo de siniestro";
+      if (!data.descripcion) return "Describí brevemente qué pasó";
     }
     if (currentStep === 3) {
-      return !data.guia_leida;
+      if (!data.guia_leida) return "Primero leé la guía de pasos a seguir";
     }
     if (currentStep === 4) {
-      return !data.compania_aseguradora;
+      if (!data.compania_aseguradora) return "Seleccioná una póliza para continuar";
+      if (!data.asegurado_nombre) return "Completá tu nombre";
+      if (!data.asegurado_dni) return "Completá tu DNI";
     }
-    return false;
+    return null;
   };
+
+  const isNextDisabled = () => getValidationMessage() !== null;
 
   return (
     <div className="max-w-2xl mx-auto pb-20">
@@ -171,7 +178,13 @@ export default function NuevoSiniestroPage() {
         )}
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex flex-col gap-2">
+        {currentStep < 6 && getValidationMessage() && (
+          <p className="text-xs text-center text-amber-600 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2">
+            ⚠ {getValidationMessage()}
+          </p>
+        )}
+        <div className="flex gap-3">
         {currentStep > 1 && (
           <button
             onClick={prevStep}
@@ -182,7 +195,7 @@ export default function NuevoSiniestroPage() {
             Atrás
           </button>
         )}
-        
+
         {currentStep < 6 ? (
           <button
             onClick={nextStep}
@@ -211,6 +224,7 @@ export default function NuevoSiniestroPage() {
             )}
           </button>
         )}
+        </div>
       </div>
     </div>
   );

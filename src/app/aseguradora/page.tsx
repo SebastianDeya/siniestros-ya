@@ -38,7 +38,7 @@ export default function AseguradoraDashboard() {
   useEffect(() => {
     const raw = localStorage.getItem("aseguradora_session");
     if (!raw) {
-      router.replace("/aseguradora/login");
+      router.replace("/iniciar-sesion");
       return;
     }
     const session = JSON.parse(raw);
@@ -63,7 +63,7 @@ export default function AseguradoraDashboard() {
 
   function handleLogout() {
     localStorage.removeItem("aseguradora_session");
-    router.push("/aseguradora/login");
+    router.push("/iniciar-sesion");
   }
 
   const filtrados = siniestros.filter((s) => {

@@ -48,7 +48,7 @@ export default function PolizasPage() {
 
   useEffect(() => {
     const raw = localStorage.getItem("aseguradora_session");
-    if (!raw) { router.replace("/aseguradora/login"); return; }
+    if (!raw) { router.replace("/iniciar-sesion"); return; }
     const session = JSON.parse(raw);
     setCompania(session.compania);
 

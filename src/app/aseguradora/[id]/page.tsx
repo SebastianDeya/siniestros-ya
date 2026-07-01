@@ -49,7 +49,7 @@ export default function AseguradoraDetallePage() {
   useEffect(() => {
     const raw = localStorage.getItem("aseguradora_session");
     if (!raw) {
-      router.replace("/aseguradora/login");
+      router.replace("/iniciar-sesion");
       return;
     }
     setCompania(JSON.parse(raw).compania);
