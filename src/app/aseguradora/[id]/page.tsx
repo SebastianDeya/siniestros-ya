@@ -66,9 +66,10 @@ export default function AseguradoraDetallePage() {
   async function avanzarEstado() {
     if (!siniestro) return;
     const idx = ETAPAS_ORDER.indexOf(siniestro.estado as EstadoSiniestro);
-    if (idx === -1 || idx >= ETAPAS_ORDER.length - 1) return;
+    const safeIdx = idx === -1 ? 0 : idx;
+    if (safeIdx >= ETAPAS_ORDER.length - 1) return;
 
-    const nextEstado = ETAPAS_ORDER[idx + 1];
+    const nextEstado = ETAPAS_ORDER[safeIdx + 1];
     setAdvancing(true);
 
     const res = await fetch(`/api/siniestros?id=${siniestro.id}`, {
@@ -106,8 +107,9 @@ export default function AseguradoraDetallePage() {
 
   const estadoConfig = ESTADO_CONFIG[siniestro.estado] || ESTADO_CONFIG.denuncia_recibida;
   const currentIdx = ETAPAS_ORDER.indexOf(siniestro.estado as EstadoSiniestro);
+  const safeIdx = currentIdx === -1 ? 0 : currentIdx;
   const isCerrado = siniestro.estado === "caso_cerrado";
-  const nextEtapa = !isCerrado ? ETAPAS_SINIESTRO[currentIdx + 1] : null;
+  const nextEtapa = !isCerrado ? ETAPAS_SINIESTRO[safeIdx + 1] : null;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -182,8 +184,8 @@ export default function AseguradoraDetallePage() {
           </h2>
           <div className="relative">
             {ETAPAS_SINIESTRO.map((etapa, index) => {
-              const isCompleted = index < currentIdx;
-              const isCurrent = index === currentIdx;
+              const isCompleted = index < safeIdx;
+              const isCurrent = index === safeIdx;
               return (
                 <div key={etapa.value} className="relative flex gap-4 pb-5 last:pb-0">
                   {index < ETAPAS_SINIESTRO.length - 1 && (
